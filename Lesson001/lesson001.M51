@@ -1,0 +1,172 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        03/07/2022  10:29:37  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_C51\C51\BIN\BL51.EXE STARTUP.obj, main.obj TO lesson001 RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  STARTUP.obj (?C_STARTUP)
+  main.obj (MAIN)
+
+
+LINK MAP OF MODULE:  lesson001 (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0028H                  *** GAP ***
+            CODE    002BH     0003H     ABSOLUTE     
+                    002EH     07D2H                  *** GAP ***
+            CODE    0800H     001AH     UNIT         ?PR?_TIMER2_INIT?MAIN
+            CODE    081AH     0014H     UNIT         ?PR?MAIN?MAIN
+            CODE    082EH     000CH     UNIT         ?C_C51STARTUP
+            CODE    083AH     000AH     UNIT         ?PR?PORT_INIT?MAIN
+            CODE    0844H     0005H     UNIT         ?PR?TIMER2_ISR?MAIN
+            CODE    0849H     0004H     UNIT         ?PR?OSCILLATOR_INIT?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   lesson001 (?C_STARTUP)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAIN
+
+?PR?MAIN?MAIN
+  +--> ?PR?OSCILLATOR_INIT?MAIN
+  +--> ?PR?PORT_INIT?MAIN
+  +--> ?PR?_TIMER2_INIT?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  lesson001 (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C_STARTUP
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2022  10:29:37  PAGE 2
+
+
+  C:082EH         SEGMENT       ?C_C51STARTUP
+  I:0008H         SEGMENT       ?STACK
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:0831H         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:082EH         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:082EH         LINE#         133
+  C:0830H         LINE#         134
+  C:0831H         LINE#         135
+  C:0832H         LINE#         136
+  C:0834H         LINE#         185
+  C:0837H         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  C:0844H         PUBLIC        Timer2_ISR
+  B:00A8H.7       PUBLIC        EA
+  B:00A0H.2       PUBLIC        LED1
+  D:00A6H         PUBLIC        P2MDOUT
+  B:00C8H.7       PUBLIC        TF2H
+  D:00D9H         PUBLIC        PCA0MD
+  D:00E1H         PUBLIC        XBR0
+  D:00E2H         PUBLIC        XBR1
+  D:00CCH         PUBLIC        TMR2
+  C:081AH         PUBLIC        main
+  C:0800H         PUBLIC        _Timer2_Init
+  D:00C8H         PUBLIC        TMR2CN
+  C:083AH         PUBLIC        PORT_Init
+  D:00B2H         PUBLIC        OSCICN
+  D:00CAH         PUBLIC        TMR2RL
+  B:00A8H.5       PUBLIC        ET2
+  B:00C8H.2       PUBLIC        TR2
+  D:008EH         PUBLIC        CKCON
+  C:0849H         PUBLIC        OSCILLATOR_Init
+  -------         PROC          MAIN
+  C:081AH         LINE#         68
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2022  10:29:37  PAGE 3
+
+
+  C:081AH         LINE#         69
+  C:081AH         LINE#         70
+  C:081DH         LINE#         73
+  C:0820H         LINE#         74
+  C:0823H         LINE#         76
+  C:082AH         LINE#         79
+  C:082CH         LINE#         81
+  -------         ENDPROC       MAIN
+  -------         PROC          OSCILLATOR_INIT
+  C:0849H         LINE#         98
+  C:0849H         LINE#         99
+  C:0849H         LINE#         100
+  C:084CH         LINE#         102
+  -------         ENDPROC       OSCILLATOR_INIT
+  -------         PROC          PORT_INIT
+  C:083AH         LINE#         115
+  C:083AH         LINE#         116
+  C:083AH         LINE#         117
+  C:083DH         LINE#         118
+  C:0840H         LINE#         119
+  C:0843H         LINE#         120
+  -------         ENDPROC       PORT_INIT
+  -------         PROC          _TIMER2_INIT
+  D:0006H         SYMBOL        counts
+  C:0800H         LINE#         135
+  C:0800H         LINE#         136
+  C:0800H         LINE#         137
+  C:0803H         LINE#         139
+  C:0806H         LINE#         141
+  C:080FH         LINE#         142
+  C:0815H         LINE#         143
+  C:0817H         LINE#         144
+  C:0819H         LINE#         145
+  -------         ENDPROC       _TIMER2_INIT
+  -------         PROC          TIMER2_ISR
+  C:0844H         LINE#         158
+  C:0844H         LINE#         160
+  C:0846H         LINE#         161
+  C:0848H         LINE#         162
+  -------         ENDPROC       TIMER2_ISR
+  -------         ENDMOD        MAIN
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0053H BYTE ( 4%) *
+******************************************************************************
+
+Program Size: data=9.0 xdata=0 code=83
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

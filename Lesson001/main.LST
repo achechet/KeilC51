@@ -1,0 +1,194 @@
+C51 COMPILER V9.01   MAIN                                                                  03/07/2022 10:29:37 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_C51\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          //-----------------------------------------------------------------------------
+   2          // F34x_Blinky.c
+   3          //-----------------------------------------------------------------------------
+   4          // Copyright 2007 Silicon Laboratories, Inc.
+   5          // http://www.silabs.com
+   6          //
+   7          // Program Description:
+   8          //
+   9          // This program flashes the P2.2 green LED on the C8051F34x target board
+  10          // five times a second using the interrupt handler for Timer2.
+  11          //
+  12          //
+  13          // How To Test:
+  14          //
+  15          // 1) Download code to a 'F34x target board
+  16          // 2) Run the code and if the P2.2 LED blinks, the code works
+  17          //
+  18          //
+  19          // FID:            34X000001
+  20          // Target:         C8051F34x
+  21          // Tool chain:     Keil C51 7.50 / Keil EVAL C51
+  22          // Command Line:   None
+  23          //
+  24          // Release 1.1
+  25          //    -27 SEP 2006 (GP)
+  26          //    -Fixed #define for SYSCLK from 24.5/8 Mhz to 12/8 Mhz.
+  27          //
+  28          // Release 1.0
+  29          //    -Initial Revision (GP)
+  30          //    -01 DEC 2005
+  31          //
+  32          
+  33          //-----------------------------------------------------------------------------
+  34          // Includes
+  35          //-----------------------------------------------------------------------------
+  36          
+  37          #include <c8051f340.h>                 // SFR declarations
+  38          
+  39          //-----------------------------------------------------------------------------
+  40          // 16-bit SFR Definitions for 'F34x
+  41          //-----------------------------------------------------------------------------
+  42          
+  43          sfr16 TMR2RL   = 0xca;                 // Timer2 reload value
+  44          sfr16 TMR2     = 0xcc;                 // Timer2 counter
+  45          
+  46          //-----------------------------------------------------------------------------
+  47          // Global Constants
+  48          //-----------------------------------------------------------------------------
+  49          
+  50          #define SYSCLK       12000000 / 8      // SYSCLK frequency in Hz
+  51          
+  52          #define BLINK_RATE   10                // Timer2 Interrupts per second
+  53          
+  54          sbit LED1 = P2^2;                      // LED='1' means ON
+  55          
+C51 COMPILER V9.01   MAIN                                                                  03/07/2022 10:29:37 PAGE 2   
+
+  56          //-----------------------------------------------------------------------------
+  57          // Function Prototypes
+  58          //-----------------------------------------------------------------------------
+  59          
+  60          void OSCILLATOR_Init (void);
+  61          void PORT_Init (void);
+  62          void Timer2_Init (int counts);
+  63          void Timer2_ISR (void);
+  64          
+  65          //-----------------------------------------------------------------------------
+  66          // main() Routine
+  67          //-----------------------------------------------------------------------------
+  68          void main (void) 
+  69          {
+  70   1         PCA0MD &= ~0x40;                         // WDTE = 0 (clear watchdog timer 
+  71   1                                                  // enable)
+  72   1              
+  73   1         OSCILLATOR_Init ();                      // Initialize system clock 
+  74   1         PORT_Init ();                            // Initialize crossbar and GPIO
+  75   1         
+  76   1         Timer2_Init (SYSCLK / 12 / BLINK_RATE);  // Init Timer2 to generate 
+  77   1                                                  // interrupts at a 10Hz rate.
+  78   1      
+  79   1         EA = 1;                                                                      // Enable global interrupts
+  80   1      
+  81   1         while (1) {}                             // Spin forever
+  82   1      }
+  83          
+  84          //-----------------------------------------------------------------------------
+  85          // Initialization Subroutines
+  86          //-----------------------------------------------------------------------------
+  87          
+  88          //-----------------------------------------------------------------------------
+  89          // OSCILLATOR_Init
+  90          //-----------------------------------------------------------------------------
+  91          //
+  92          // Return Value : None
+  93          // Parameters   : None
+  94          //
+  95          // This function initializes the system clock to (12 Mhz / 8)
+  96          //
+  97          //-----------------------------------------------------------------------------
+  98          void OSCILLATOR_Init (void)
+  99          {
+ 100   1         OSCICN = 0x80;                      // Configure internal oscillator for
+ 101   1                                             // its lowest frequency
+ 102   1      }
+ 103          
+ 104          //-----------------------------------------------------------------------------
+ 105          // PORT_Init
+ 106          //-----------------------------------------------------------------------------
+ 107          //
+ 108          // Return Value : None
+ 109          // Parameters   : None
+ 110          //
+ 111          // This function configures the crossbar and GPIO ports.
+ 112          //
+ 113          // P2.2   digital   push-pull     LED1
+ 114          //-----------------------------------------------------------------------------
+ 115          void PORT_Init (void)
+ 116          {
+ 117   1         XBR0     = 0x00;                    // No digital peripherals selected
+C51 COMPILER V9.01   MAIN                                                                  03/07/2022 10:29:37 PAGE 3   
+
+ 118   1         XBR1     = 0x40;                    // Enable crossbar and weak pull-ups
+ 119   1         P2MDOUT |= 0x04;                    // Enable LED as a push-pull output
+ 120   1      }
+ 121          
+ 122          //-----------------------------------------------------------------------------
+ 123          // Timer2_Init
+ 124          //-----------------------------------------------------------------------------
+ 125          //
+ 126          // Return Value : None
+ 127          // Parameters   : 
+ 128          //   1)  int counts - calculated Timer overflow rate
+ 129          //                    range is postive range of integer: 0 to 32767
+ 130          //
+ 131          // Configure Timer2 to 16-bit auto-reload and generate an interrupt at 
+ 132          // interval specified by <counts> using SYSCLK/48 as its time base.
+ 133          //
+ 134          //-----------------------------------------------------------------------------
+ 135          void Timer2_Init (int counts)
+ 136          {
+ 137   1         TMR2CN  = 0x00;                     // Stop Timer2; Clear TF2;
+ 138   1                                             // Use SYSCLK/12 as timebase
+ 139   1         CKCON  &= ~0x60;                    // Timer2 clocked based on T2XCLK;
+ 140   1      
+ 141   1         TMR2RL  = -counts;                  // Init reload values
+ 142   1         TMR2    = 0xffff;                   // Set to reload immediately
+ 143   1         ET2     = 1;                        // Enable Timer2 interrupts
+ 144   1         TR2     = 1;                        // Start Timer2
+ 145   1      }
+ 146          
+ 147          //-----------------------------------------------------------------------------
+ 148          // Interrupt Service Routines
+ 149          //-----------------------------------------------------------------------------
+ 150          
+ 151          //-----------------------------------------------------------------------------
+ 152          // Timer2_ISR
+ 153          //-----------------------------------------------------------------------------
+ 154          //
+ 155          // This routine changes the state of the LED whenever Timer2 overflows.
+ 156          //
+ 157          //-----------------------------------------------------------------------------
+ 158          void Timer2_ISR (void) interrupt 5
+ 159          {
+ 160   1         TF2H = 0;                           // Clear Timer2 interrupt flag
+ 161   1         LED1 = ~LED1;                       // Change state of LED
+ 162   1      }
+ 163          
+ 164          
+ 165          //-----------------------------------------------------------------------------
+ 166          // End Of File
+ 167          //-----------------------------------------------------------------------------
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     65    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
